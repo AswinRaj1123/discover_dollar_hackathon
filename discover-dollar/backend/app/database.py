@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS listings (
     shift_id TEXT NOT NULL REFERENCES shifts(id),
     listed_by TEXT NOT NULL REFERENCES staff(id),
     status TEXT NOT NULL DEFAULT 'OPEN',
+    claimed_by TEXT REFERENCES staff(id),
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -47,6 +48,10 @@ CREATE TABLE IF NOT EXISTS action_history (
     details_json TEXT NOT NULL DEFAULT '{}',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_listing_per_shift
+ON listings (shift_id)
+WHERE status IN ('OPEN', 'CLAIMED');
 """
 
 
@@ -81,6 +86,7 @@ class Database:
         """
         with self.connection() as connection:
             connection.executescript(SCHEMA)
+            self._migrate_listings(connection)
             has_saved_state = any(
                 connection.execute(f"SELECT 1 FROM {table} LIMIT 1").fetchone()
                 for table in ("staff", "shifts", "listings", "action_history")
@@ -139,6 +145,15 @@ class Database:
                 ),
             )
             return True
+
+    @staticmethod
+    def _migrate_listings(connection: sqlite3.Connection) -> None:
+        columns = {
+            row["name"]
+            for row in connection.execute("PRAGMA table_info(listings)").fetchall()
+        }
+        if "claimed_by" not in columns:
+            connection.execute("ALTER TABLE listings ADD COLUMN claimed_by TEXT REFERENCES staff(id)")
 
     def fetch_all(self, table: str) -> list[dict]:
         allowed_tables = {"staff", "shifts", "listings", "action_history"}
