@@ -132,6 +132,26 @@ def test_exactly_eleven_hours_is_allowed_and_week_uses_shift_start(tmp_path):
         assert response.status_code == 200
 
 
+def test_overlap_and_rest_are_checked_across_week_boundaries(tmp_path):
+    target = shift("T1", "2026-03-08T23:00", "2026-03-09T07:00")
+    next_week = shift("A1", "2026-03-09T10:00", "2026-03-09T18:00", owner="S2")
+    with TestClient(make_app(tmp_path, [target, next_week])) as client:
+        listing_id = post(client, "/api/shifts/T1/listings", "S1").json()["id"]
+        response = post(client, f"/api/listings/{listing_id}/claim", "S2")
+        assert response.status_code == 400
+        assert response.json()["reasons"][0]["rule"] == "11-hour rest"
+
+    target = shift("T1", "2026-03-08T23:00", "2026-03-09T07:00")
+    next_week_overlap = shift("A1", "2026-03-09T06:00", "2026-03-09T14:00", owner="S2")
+    overlap_path = tmp_path / "overlap"
+    overlap_path.mkdir()
+    with TestClient(make_app(overlap_path, [target, next_week_overlap])) as client:
+        listing_id = post(client, "/api/shifts/T1/listings", "S1").json()["id"]
+        response = post(client, f"/api/listings/{listing_id}/claim", "S2")
+        assert response.status_code == 400
+        assert response.json()["reasons"][0]["rule"] == "overlap"
+
+
 def test_approval_revalidates_current_assignments_and_history(tmp_path):
     target = shift("T1", "2026-03-02T07:00", "2026-03-02T15:00", "ICU")
     with TestClient(make_app(tmp_path, [target])) as client:

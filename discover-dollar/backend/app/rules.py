@@ -46,11 +46,7 @@ def validate_claim(claimer: dict, target: dict, assigned_shifts: list[dict]) -> 
             }
         )
 
-    same_week = [
-        shift for shift in assigned_shifts
-        if week_start(shift["start"]) == week_start(target["start"])
-    ]
-    for shift in same_week:
+    for shift in assigned_shifts:
         if overlaps(target, shift):
             reasons.append(
                 {
@@ -60,7 +56,7 @@ def validate_claim(claimer: dict, target: dict, assigned_shifts: list[dict]) -> 
                 }
             )
 
-    for shift in same_week:
+    for shift in assigned_shifts:
         if overlaps(target, shift):
             continue
         if parse_time(target["end"]) <= parse_time(shift["start"]):
@@ -81,7 +77,11 @@ def validate_claim(claimer: dict, target: dict, assigned_shifts: list[dict]) -> 
                 }
             )
 
-    weekly_hours = sum(duration_hours(shift) for shift in same_week) + duration_hours(target)
+    target_week_shifts = [
+        shift for shift in assigned_shifts
+        if week_start(shift["start"]) == week_start(target["start"])
+    ]
+    weekly_hours = sum(duration_hours(shift) for shift in target_week_shifts) + duration_hours(target)
     if weekly_hours > 40:
         reasons.append(
             {

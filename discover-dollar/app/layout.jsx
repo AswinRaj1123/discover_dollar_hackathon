@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Hackathon Starter",
-  description: "Next.js, FastAPI, and MongoDB starter application",
+  title: "ShiftSwap | Clinic Operations",
+  description: "Staff shift swapping for clinic teams",
 };
 
 export default function RootLayout({ children }) {
