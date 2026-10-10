@@ -137,20 +137,20 @@ array containing rule names, messages, and conflicting shift IDs.
 Users choose the staff member or manager they are acting as before entering
 ShiftSwap.
 
-![Profile selection screen](./public/user_screen.png)
+![Profile selection screen](./discover-dollar/public/user_screen.png)
 
 ### Staff dashboard
 
 Staff can view assigned shifts, post shifts for swapping, and review recent
 activity.
 
-![Staff dashboard](./public/staff%20screen.png)
+![Staff dashboard](./discover-dollar/public/staff%20screen.png)
 
 ### Manager dashboard
 
 Managers can review claimed listings and approve or reject requests.
 
-![Manager dashboard](./public/manager_screen.png)
+![Manager dashboard](./discover-dollar/public/manager_screen.png)
 
 ## Known limitations
 
