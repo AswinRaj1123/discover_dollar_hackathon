@@ -8,6 +8,7 @@ from typing import Iterator
 BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_DATABASE_PATH = BASE_DIR.parent / "data" / "shiftswap.sqlite3"
 DEFAULT_SEED_PATH = BASE_DIR / "SHiftSwap_seed.json"
+DEFAULT_BACKUP_PATH = BASE_DIR / "shiftswap_backup.sqlite3"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS app_state (
@@ -80,9 +81,11 @@ class Database:
             connection.close()
 
     def initialize(self) -> bool:
-        """Create tables and seed only an empty database.
+        """Create tables and initialize only an empty database.
 
-        Returns True when seed data was loaded during this call.
+        An empty database prefers the supplied seed JSON. If that file is
+        unavailable, the bundled SQLite backup provides the same initial data.
+        Returns True when seed or backup data was loaded during this call.
         """
         with self.connection() as connection:
             connection.executescript(SCHEMA)
@@ -93,6 +96,11 @@ class Database:
             )
             if has_saved_state:
                 return False
+
+            if not self.seed_path.exists() and DEFAULT_BACKUP_PATH.exists():
+                with sqlite3.connect(DEFAULT_BACKUP_PATH) as backup:
+                    backup.backup(connection)
+                return True
 
             payload = json.loads(self.seed_path.read_text(encoding="utf-8"))
             connection.executemany(

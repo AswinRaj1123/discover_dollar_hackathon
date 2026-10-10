@@ -1,7 +1,9 @@
 import sqlite3
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from app.database import DEFAULT_BACKUP_PATH
 from app.main import create_app
 
 
@@ -55,3 +57,14 @@ def test_saved_state_survives_application_restart(tmp_path):
     assert len(listings) == 1
     assert listings[0]["shift_id"] == "SH001"
     assert [event["action"] for event in history].count("SEED_INITIALIZED") == 1
+
+
+def test_missing_seed_uses_bundled_backup(tmp_path):
+    assert Path(DEFAULT_BACKUP_PATH).exists()
+    database_path = tmp_path / "shiftswap.sqlite3"
+    missing_seed = tmp_path / "missing-seed.json"
+    app = create_app(database_path, missing_seed)
+
+    with TestClient(app) as client:
+        assert len(client.get("/api/staff").json()["staff"]) == 10
+        assert len(client.get("/api/shifts").json()["shifts"]) == 61

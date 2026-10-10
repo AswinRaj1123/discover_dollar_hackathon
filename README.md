@@ -88,6 +88,11 @@ seed only when the staff, shifts, listings, and action-history tables contain
 no saved application state. Restarting the backend does not reseed or overwrite
 listings, assignments, or history.
 
+The repository also contains `discover-dollar/backend/app/shiftswap_backup.sqlite3`,
+an initial SQLite backup. If the primary database is new or empty and
+`SHiftSwap_seed.json` is unavailable, the backend restores this backup instead
+of failing. Existing saved state always takes priority.
+
 The seed currently contains 10 people, including 8 staff and 2 managers, and
 61 shifts. Managers cannot post or claim shifts.
 
