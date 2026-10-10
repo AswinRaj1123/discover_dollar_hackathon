@@ -68,3 +68,21 @@ def test_missing_seed_uses_bundled_backup(tmp_path):
     with TestClient(app) as client:
         assert len(client.get("/api/staff").json()["staff"]) == 10
         assert len(client.get("/api/shifts").json()["shifts"]) == 61
+
+
+def test_deployed_frontend_origin_is_allowed(tmp_path):
+    app = create_app(tmp_path / "shiftswap.sqlite3", tmp_path / "missing-seed.json")
+
+    with TestClient(app) as client:
+        response = client.options(
+            "/api/health",
+            headers={
+                "Origin": "https://shiftswap-discover-dollar.vercel.app",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "https://shiftswap-discover-dollar.vercel.app"
+    )

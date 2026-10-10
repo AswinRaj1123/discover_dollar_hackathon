@@ -58,9 +58,10 @@ npm run dev
 
 Open <http://localhost:3000>.
 
-If the frontend is configured for `http://localhost:8000`, use the default
-frontend URL instead. The backend CORS setting accepts the configured
-`FRONTEND_URL`, defaulting to `http://localhost:3000`.
+The backend accepts local frontend origins and the deployed Vercel origin
+`https://shiftswap-discover-dollar.vercel.app` by default. For another
+deployment, set `FRONTEND_URL` to one origin or `FRONTEND_URLS` to a
+comma-separated list of origins.
 
 ## Tests and checks
 

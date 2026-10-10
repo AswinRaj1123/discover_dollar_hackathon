@@ -11,6 +11,20 @@ from .database import DEFAULT_DATABASE_PATH, DEFAULT_SEED_PATH, Database, serial
 from .service import DomainError, ShiftSwapService
 
 
+DEFAULT_FRONTEND_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://shiftswap-discover-dollar.vercel.app",
+]
+
+
+def frontend_origins() -> list[str]:
+    configured = os.getenv("FRONTEND_URLS") or os.getenv("FRONTEND_URL")
+    if not configured:
+        return DEFAULT_FRONTEND_ORIGINS
+    return [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
+
+
 class ActorRequest(BaseModel):
     actor_id: str | None = None
     staff_id: str | None = None
@@ -59,7 +73,7 @@ def create_app(
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")],
+        allow_origins=frontend_origins(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
