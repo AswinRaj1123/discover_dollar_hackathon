@@ -64,6 +64,19 @@ For local backend development, set `NEXT_PUBLIC_API_URL` to
 `https://discover-dollar-shiftswap.onrender.com` in its project environment
 variables, followed by a redeploy.
 
+### Render backend
+
+The repository includes [render.yaml](<F:/CODING FILES/Job Assessment/discover_dollar/discover_dollar_hackathon/render.yaml>)
+with the Render service configuration. The backend must use this start command:
+
+```text
+python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Do not use `--reload` or bind to `127.0.0.1` on Render. Render supplies the
+`PORT` environment variable and requires the server to listen on all
+interfaces.
+
 The backend accepts local frontend origins and the deployed Vercel origin
 `https://shiftswap-discover-dollar.vercel.app` by default. For another
 deployment, set `FRONTEND_URL` to one origin or `FRONTEND_URLS` to a

@@ -327,7 +327,7 @@ export default function Home() {
       {!data ? (
         <section className="empty-state">
           <h2>Connect to the backend to continue</h2>
-          <p>Start FastAPI on port 8000, then try again.</p>
+          <p>Check the backend deployment and try again.</p>
           <button onClick={loadData}>Retry connection</button>
         </section>
       ) : (

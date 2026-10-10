@@ -86,3 +86,24 @@ def test_deployed_frontend_origin_is_allowed(tmp_path):
     assert response.headers["access-control-allow-origin"] == (
         "https://shiftswap-discover-dollar.vercel.app"
     )
+
+
+def test_deployed_origin_remains_allowed_when_render_cors_env_is_set(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setenv("FRONTEND_URL", "https://another-frontend.example.com")
+    app = create_app(tmp_path / "shiftswap.sqlite3", tmp_path / "missing-seed.json")
+
+    with TestClient(app) as client:
+        response = client.options(
+            "/api/health",
+            headers={
+                "Origin": "https://shiftswap-discover-dollar.vercel.app",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "https://shiftswap-discover-dollar.vercel.app"
+    )

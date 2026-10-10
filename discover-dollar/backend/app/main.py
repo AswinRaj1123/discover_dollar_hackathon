@@ -20,9 +20,12 @@ DEFAULT_FRONTEND_ORIGINS = [
 
 def frontend_origins() -> list[str]:
     configured = os.getenv("FRONTEND_URLS") or os.getenv("FRONTEND_URL")
-    if not configured:
-        return DEFAULT_FRONTEND_ORIGINS
-    return [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
+    configured_origins = (
+        [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
+        if configured
+        else []
+    )
+    return list(dict.fromkeys(DEFAULT_FRONTEND_ORIGINS + configured_origins))
 
 
 class ActorRequest(BaseModel):
