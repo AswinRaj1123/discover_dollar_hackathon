@@ -52,11 +52,17 @@ Backend URLs:
 
 ```powershell
 npm install
-$env:NEXT_PUBLIC_API_URL = "http://127.0.0.1:8000"
+$env:NEXT_PUBLIC_API_URL = "https://discover-dollar-shiftswap.onrender.com"
 npm run dev
 ```
 
 Open <http://localhost:3000>.
+
+For local backend development, set `NEXT_PUBLIC_API_URL` to
+`http://127.0.0.1:8000` instead. The deployed Vercel frontend should have
+`NEXT_PUBLIC_API_URL` set to
+`https://discover-dollar-shiftswap.onrender.com` in its project environment
+variables, followed by a redeploy.
 
 The backend accepts local frontend origins and the deployed Vercel origin
 `https://shiftswap-discover-dollar.vercel.app` by default. For another
