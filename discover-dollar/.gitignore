@@ -35,6 +35,7 @@ yarn-error.log*
 
 # Python
 backend/.venv/
+backend/data/*.sqlite3
 __pycache__/
 *.py[cod]
 
